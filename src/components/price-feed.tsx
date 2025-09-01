@@ -54,53 +54,43 @@ export function PriceFeed() {
   }, [pairs, searchTerm]);
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle>Live Prices</CardTitle>
-        <CardDescription>Real-time prices for top pairs.</CardDescription>
+        <CardTitle>Markets</CardTitle>
         <Input
-          placeholder="Filter pairs..."
+          placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mt-2"
         />
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-96">
+      <CardContent className="flex-grow p-0">
+        <ScrollArea className="h-full">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Pair</TableHead>
                 <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">24h %</TableHead>
+                <TableHead className="text-right">Change</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredPairs.map((pair) => {
-                const Icon = iconMap[pair.name.split('/')[0]] || CircleDollarSign;
                 const isPositive = pair.change24h >= 0;
                 return (
-                  <TableRow key={pair.name}>
+                  <TableRow key={pair.name} className="text-xs">
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-5 w-5 text-muted-foreground" />
-                        <div className="font-medium">{pair.name}</div>
-                      </div>
+                      <div className="font-medium">{pair.name}</div>
                     </TableCell>
                     <TableCell className="text-right font-mono">
-                      ${pair.price.toFixed(2)}
+                      {pair.price.toFixed(2)}
                     </TableCell>
                     <TableCell
                       className={cn(
-                        'text-right font-medium flex items-center justify-end gap-1',
+                        'text-right font-medium',
                         isPositive ? 'text-[hsl(var(--chart-2))]' : 'text-destructive'
                       )}
                     >
-                      {isPositive ? (
-                        <TrendingUp className="h-4 w-4" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4" />
-                      )}
                       {pair.change24h.toFixed(2)}%
                     </TableCell>
                   </TableRow>

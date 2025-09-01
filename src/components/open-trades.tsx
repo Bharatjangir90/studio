@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -39,40 +38,42 @@ export function OpenTrades() {
   }, []);
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle>Open Trades</CardTitle>
-        <CardDescription>Your current active positions.</CardDescription>
+        <CardTitle>Open Orders</CardTitle>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-72">
+      <CardContent className="flex-grow p-0">
+        <ScrollArea className="h-full">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Pair</TableHead>
-                <TableHead className="text-center">Type</TableHead>
-                <TableHead className="text-right">Unrealized P/L</TableHead>
+                <TableHead>Symbol</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="text-right">Price</TableHead>
+                 <TableHead className="text-right">P/L</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {trades.map((trade) => (
-                <TableRow key={trade.id}>
+                <TableRow key={trade.id} className="text-xs">
                   <TableCell>
-                    <div className="font-medium">{trade.pair.split('/')[0]}</div>
-                    <div className="text-xs text-muted-foreground">{trade.pair.split('/')[1]}</div>
+                    <div className="font-medium">{trade.pair}</div>
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell>
                      <Badge
                       variant={trade.type === 'BUY' ? 'default' : 'destructive'}
                       className={cn(
-                        trade.type === 'BUY' &&
-                          'bg-[hsl(var(--chart-2))] hover:bg-[hsl(var(--chart-2))] text-white',
+                        'text-xs',
+                        trade.type === 'BUY'
+                          ? 'bg-[hsl(var(--chart-2))] hover:bg-[hsl(var(--chart-2))] text-white'
+                          : 'bg-destructive hover:bg-destructive text-destructive-foreground',
                         'w-12 justify-center'
                       )}
                     >
                       {trade.type}
                     </Badge>
                   </TableCell>
+                  <TableCell className="text-right font-mono">${trade.amount.toLocaleString()}</TableCell>
                   <TableCell
                     className={cn(
                       'text-right font-medium transition-colors duration-500',

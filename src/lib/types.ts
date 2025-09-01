@@ -16,4 +16,5 @@ export interface ChartDataPoint {
   time: string;
   price: number;
   average: number;
+  volume: number;
 }

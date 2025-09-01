@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import {
-  Area,
-  AreaChart,
-  CartesianGrid,
+  Bar,
+  BarChart,
   ComposedChart,
   Line,
   ReferenceLine,
@@ -12,6 +11,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  CartesianGrid
 } from 'recharts';
 import type { ChartConfig } from '@/components/ui/chart';
 import {
@@ -35,9 +35,13 @@ const chartConfig = {
     color: 'hsl(var(--chart-1))',
   },
   average: {
-    label: '3-day Average',
-    color: 'hsl(var(--chart-3))',
+    label: 'Moving Avg.',
+    color: 'hsl(var(--chart-4))',
   },
+  volume: {
+    label: 'Volume',
+    color: 'hsl(var(--muted))'
+  }
 } satisfies ChartConfig;
 
 type Timeframe = '1m' | '5m' | '1h';
@@ -54,12 +58,15 @@ export function PriceChart() {
   const lastPrice = activeData[activeData.length - 1].price;
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+    <Card className="h-full">
+      <CardHeader className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
         <div className="grid flex-1 gap-1">
-          <CardTitle>BTC/USD Price Chart</CardTitle>
+          <div className="flex items-center gap-4">
+            <CardTitle>BTC/USD</CardTitle>
+            <div className="text-2xl font-bold text-[hsl(var(--chart-2))]">${lastPrice.toLocaleString()}</div>
+          </div>
           <CardDescription>
-            Showing price data for Bitcoin against US Dollar
+            Bitcoin / US Dollar
           </CardDescription>
         </div>
         <div className="flex items-center gap-2">
@@ -67,7 +74,7 @@ export function PriceChart() {
             <Button
               key={t}
               size="sm"
-              variant={timeframe === t ? 'default' : 'outline'}
+              variant={timeframe === t ? 'secondary' : 'ghost'}
               className="h-7"
               onClick={() => setTimeframe(t)}
             >
@@ -76,13 +83,13 @@ export function PriceChart() {
           ))}
         </div>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="aspect-video h-[350px] w-full">
+      <CardContent className="h-[calc(100%-8rem)]">
+        <ChartContainer config={chartConfig} className="h-full w-full">
           <ComposedChart
             data={activeData}
             margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
           >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)"/>
             <XAxis
               dataKey="time"
               tickLine={false}
@@ -91,53 +98,56 @@ export function PriceChart() {
               tickFormatter={(value) => value.slice(0, 5)}
             />
             <YAxis
+              yAxisId="left"
+              orientation="left"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              domain={['dataMin - 500', 'dataMax + 500']}
+              tickFormatter={(value) => `$${value}`}
+            />
+             <YAxis
+              yAxisId="right"
               orientation="right"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              domain={['dataMin - 100', 'dataMax + 100']}
-              tickFormatter={(value) => `$${value}`}
+              domain={[0, 'dataMax * 4']}
+              tickFormatter={(value) => `${value / 1000}k`}
             />
             <ChartTooltipCore
-              cursor={false}
+              cursor={true}
               content={
                 <ChartTooltipContent
                   indicator="line"
-                  labelFormatter={(label, payload) => {
-                    return `Time: ${label}`;
-                  }}
+                  labelFormatter={(label) => `Time: ${label}`}
                   formatter={(value, name) => (
                     <>
-                      <div className="flex-1 space-y-1">
-                        <div className="font-bold capitalize">{name}</div>
-                      </div>
-                      <div className="font-mono">${(value as number).toLocaleString()}</div>
+                      <div className="font-bold capitalize">{name}</div>
+                      <div>${(value as number).toLocaleString()}</div>
                     </>
                   )}
                 />
               }
             />
-            <defs>
-              <linearGradient id="fillPrice" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-price)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-price)" stopOpacity={0.1} />
-              </linearGradient>
-            </defs>
-            <Area
+            <Bar dataKey="volume" yAxisId="right" fill="var(--color-volume)" radius={2} />
+            <Line
               dataKey="price"
-              type="natural"
-              fill="url(#fillPrice)"
-              stroke="var(--color-price)"
-              stackId="a"
+              yAxisId="left"
+              type="monotone"
+              stroke="hsl(var(--chart-2))"
+              strokeWidth={2}
+              dot={false}
             />
             <Line
               dataKey="average"
-              type="natural"
+              yAxisId="left"
+              type="monotone"
               stroke="var(--color-average)"
               strokeWidth={2}
               dot={false}
             />
-             <ReferenceLine y={lastPrice} stroke="hsl(var(--foreground))" strokeDasharray="3 3" strokeWidth={1}>
+             <ReferenceLine y={lastPrice} yAxisId="left" stroke="hsl(var(--foreground))" strokeDasharray="3 3" strokeWidth={1}>
              </ReferenceLine>
           </ComposedChart>
         </ChartContainer>
