@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ArrowUp, ArrowDown, Wallet, TrendingUp } from 'lucide-react';
+import { ArrowUp, ArrowDown, DollarSign, TrendingUp } from 'lucide-react';
 import { historicalTrades } from '@/lib/mock-data';
 
 export function PnlSummary() {
@@ -23,7 +23,7 @@ export function PnlSummary() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
           <span className="text-muted-foreground">
-            <Wallet className="h-4 w-4" />
+            <DollarSign className="h-4 w-4" />
           </span>
         </CardHeader>
         <CardContent>

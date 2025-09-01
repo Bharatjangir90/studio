@@ -1,15 +1,14 @@
 import type { TradingPair, Trade, ChartDataPoint } from './types';
 
 export const tradingPairs: TradingPair[] = [
-  { name: 'BTC/USD', price: 68050.55, change24h: 2.5 },
-  { name: 'ETH/USD', price: 3550.8, change24h: 1.8 },
-  { name: 'SOL/USD', price: 165.2, change24h: -1.2 },
-  { name: 'DOGE/USD', price: 0.158, change24h: 5.1 },
-  { name: 'XRP/USD', price: 0.52, change24h: 0.5 },
-  { name: 'ADA/USD', price: 0.45, change24h: -0.8 },
-  { name: 'AVAX/USD', price: 35.7, change24h: 3.2 },
-  { name: 'LINK/USD', price: 18.2, change24h: -2.1 },
-  { name: 'MATIC/USD', price: 0.73, change24h: 1.1 },
+  { name: 'BTC/USD', price: 68050.55, change24h: 2.5, allocation: 25 },
+  { name: 'ETH/USD', price: 3550.8, change24h: 1.8, allocation: 20 },
+  { name: 'BNB/USD', price: 580.1, change24h: 0.5, allocation: 15 },
+  { name: 'SOL/USD', price: 165.2, change24h: -1.2, allocation: 10 },
+  { name: 'ADA/USD', price: 0.45, change24h: -0.8, allocation: 10 },
+  { name: 'DOT/USD', price: 7.5, change24h: 1.2, allocation: 10 },
+  { name: 'AVAX/USD', price: 35.7, change24h: 3.2, allocation: 5 },
+  { name: 'MATIC/USD', price: 0.73, change24h: 1.1, allocation: 5 },
 ];
 
 export const openTrades: Trade[] = [
@@ -57,3 +56,22 @@ const generateChartData = (points: number, periodMinutes: number, startPrice: nu
 export const chartData = generateChartData(60, 1, 68000);
 export const chartData5m = generateChartData(60, 5, 68000);
 export const chartData1h = generateChartData(48, 60, 68000);
+
+export const riskAndData = {
+  sentiment: {
+    score: 0.65,
+    label: 'Bullish',
+  },
+  newsImpact: {
+    score: 82,
+    label: 'High',
+  },
+  socialVolume: {
+    score: 75,
+    label: 'Increasing',
+  },
+  volatility: {
+    score: 1.8,
+    label: 'Moderate'
+  }
+}
