@@ -31,37 +31,6 @@ const TradingSignalOutputSchema = z.object({
 });
 export type TradingSignalOutput = z.infer<typeof TradingSignalOutputSchema>;
 
-const potentialInformationSourceSchema = z.object({
-  name: z.string().describe('The name of the information source.'),
-  description: z.string().describe('A description of the information source.'),
-  url: z.string().url().describe('The URL of the information source.'),
-});
-
-const identifyInformationSources = ai.defineTool({
-  name: 'identifyInformationSources',
-  description: 'Identifies external information sources relevant to trading signals.',
-  inputSchema: z.object({
-    tradingPair: z.string().describe('The trading pair to analyze (e.g., BTC/USD).'),
-  }),
-  outputSchema: z.array(potentialInformationSourceSchema),
-},
-async (input) => {
-  // TODO: Implement the logic to identify relevant external information sources
-  // For now, return a dummy response
-  return [
-    {
-      name: 'CoinDesk',
-      description: 'Cryptocurrency news and analysis',
-      url: 'https://www.coindesk.com/',
-    },
-    {
-      name: 'TradingView',
-      description: 'Charting and social networking platform for traders and investors',
-      url: 'https://www.tradingview.com/',
-    },
-  ];
-});
-
 export async function generateTradingSignal(
   input: TradingSignalInput
 ): Promise<TradingSignalOutput> {
@@ -72,20 +41,23 @@ const prompt = ai.definePrompt({
   name: 'tradingSignalPrompt',
   input: {schema: TradingSignalInputSchema},
   output: {schema: TradingSignalOutputSchema},
-  tools: [identifyInformationSources],
-  prompt: `You are an AI-powered trading signal generator. Analyze the provided market data and generate a trading signal (BUY, SELL, or HOLD) for the given trading pair.
+  prompt: `You are an AI-powered trading signal generator that mimics a hedge fund-level system.
+You must follow this 10-step process to generate a trading signal:
 
-Trading Pair: {{{tradingPair}}}
-Current Price: {{{currentPrice}}}
-Historical Data: {{{historicalData}}}
+1.  **Portfolio Analysis**: You are analyzing {{{tradingPair}}}. The current price is {{{currentPrice}}}.
+2.  **ATR Calculation**: Review the historical data provided to assess volatility. Historical Data: {{{historicalData}}}
+3.  **Adaptive Thresholds**: Based on the asset and its volatility, determine appropriate confidence and deviation thresholds.
+4.  **Signal Generation**: Use a mix of mean reversion and momentum analysis on the provided data to generate a preliminary signal.
+5.  **Multi-timeframe Check**: Conceptually, confirm if the signal holds across short, medium, and long-term trends based on the historical data pattern.
+6.  **Alternative Data**: Consider market sentiment and news impact. Assume neutral sentiment unless data suggests otherwise.
+7.  **Risk Controls**: Validate the signal against liquidity and volatility checks. Assume sufficient liquidity and normal volatility unless data implies extreme conditions.
+8.  **Position Sizing**: Determine a theoretical position size (this is a simulation, no real funds).
+9.  **Final Safety Check**: Ensure the trade would not violate daily loss limits (assume none have been hit).
+10. **Trade Execution**: Based on the comprehensive analysis from steps 1-9, make a final BUY, SELL, or HOLD decision.
 
-Consider information from these sources:
-{{#each (identifyInformationSources tradingPair=tradingPair)}}
-- Source: {{this.name}}, Description: {{this.description}}, URL: {{this.url}}
-{{/each}}
-
-Based on your analysis, provide a trading signal with a confidence level and a clear explanation of your reasoning.
-`, config: {
+Provide a clear signal, a confidence score, and a concise reason for your decision based on this rigorous process.
+`,
+  config: {
     safetySettings: [
       {
         category: 'HARM_CATEGORY_HATE_SPEECH',
